@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor IEEE 754</title>
+</head>
+
+<body>
+    <div>
+        <form>
+            <input type="number" id="numbr">
+            <p>
+                Ingrese un numero real
+                <input type="button" value="Convertir" onclick="convertir()">
+            </p>
+        </form>
+    </div>
+
+    <div>
+        <p>
+            El numero en formato IEEE754 es : <span id="resultado"></span>
+        </p>
+    </div>
+
+    <script>
+        function convertir() {
+            let valor = parseFloat(document.getElementById("numbr").value);
+            let base = 2;
+            let signo = 0;
+            //console.log(valor);
+            if (valor < 0) {
+                signo = 1;
+            }
+            let pint = Math.trunc(valor);
+            let pfloat = Math.abs(Math.abs(valor) - pint);
+            pint = conversionInt(pint);
+            pfloat = conversionFloat(pfloat);
+            let exp = exponente(pint);
+            let exponentedec = exp + 127;
+
+            let expBin = conversionInt(exponentedec);
+            
+            /*console.log(pint);
+            //console.log(pfloat);
+            console.log(exp);*/
+
+
+
+            let mantisa = (pint + pfloat).substring(1, 24); // Solo 23 bits
+
+            //console.log(mantisa);
+
+            let ieee754= signo + expBin + mantisa;
+            document.getElementById("resultado").innerText = ieee754;
+        }
+
+        function conversionInt(numero) {
+            let base = 2;
+            let respuesta = "";
+            while (numero > 0) {
+                let residuo = numero % base;
+                respuesta = residuo.toString() + respuesta;
+                numero = Math.trunc(numero / base);
+            }
+            return respuesta;
+        }
+
+        function conversionFloat(decimal) {
+            let base = 2;
+            let respuesta = "";
+            let final = decimal;
+            for (i = 0; i < 23; i++) {
+                final = final * base;
+                let entero = Math.trunc(final);
+                respuesta = respuesta + entero.toString();
+                final = final - entero;
+            }
+            return respuesta;
+        }
+
+        function exponente(pint) {
+            let longitud = pint.length;
+            for (i = 1; i <= longitud; i++) {
+                if (pint[i] == '1') {
+                    return longitud - i;
+                }
+            }
+            return -1;
+        }
+
+    </script>
+</body>
+
+</html>
